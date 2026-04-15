@@ -41,15 +41,17 @@ Example — "Why React component re-render?"
 - full: "New object ref each render. Inline object prop = new ref = re-render. Wrap in `useMemo`."
 - ultra: "Inline obj prop → new ref → re-render. `useMemo`."
 - wenyan-lite: "組件頻重繪，以每繪新生對象參照故。以 useMemo 包之。"
-- wenyan-full: "物出新參照，致重繪。useMemo .Wrap之。"
+- wenyan-full: "物出新參照，致重繪。useMemo Wrap之。"
 - wenyan-ultra: "新參照→重繪。useMemo Wrap。"
+
+> **Technical Convention for WenYan Modes:** English technical terms (e.g., useMemo, connection, reuse, handshake, request) remain untranslated in wenyan modes to preserve technical accuracy and clarity. Only descriptive text is translated to Chinese.
 
 Example — "Explain database connection pooling."
 - lite: "Connection pooling reuses open connections instead of creating new ones per request. Avoids repeated handshake overhead."
 - full: "Pool reuse open DB connections. No new connection per request. Skip handshake overhead."
 - ultra: "Pool = reuse DB conn. Skip handshake → fast under load."
-- wenyan-full: "池reuse open connection。不每req新開。skip handshake overhead。"
-- wenyan-ultra: "池reuse conn。skip handshake → fast。"
+- wenyan-full: "pool重用open connections。不每request新開。skip handshake overhead。"
+- wenyan-ultra: "pool重用conn。skip handshake→快。"
 
 ## Auto-Clarity
 
