@@ -10,7 +10,7 @@ const projectsRouter = require('./routes/projects');
 const skillsRouter = require('./routes/skills');
 const contactRouter = require('./routes/contact');
 const resumeRouter = require('./routes/resume');
-const { initializeTransporter } = require('./controllers/contactController');
+const { initializeTransporter, verifyTransporter } = require('./controllers/contactController');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,17 +20,32 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
-// CORS
+// CORS - Define allowed origins
+const allowedOrigins = [
+  'https://dhavalmca.github.io',
+  'https://dhaval-portfolio-019o.onrender.com'
+];
+
+// Add localhost only in development
+if (process.env.NODE_ENV !== 'production') {
+  allowedOrigins.push('http://localhost:3000');
+}
+
+// CORS options with function-based origin validation
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production'
-    ? [
-        'https://dhavalmca.github.io',
-        'https://dhaval-portfolio-019o.onrender.com',
-        'http://localhost:3000'
-      ]
-    : '*',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy: Origin not allowed'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 };
 app.use(cors(corsOptions));
 
@@ -96,8 +111,26 @@ app.listen(PORT, '0.0.0.0')
     console.log('Environment: ' + (process.env.NODE_ENV || 'development'));
 
     initializeTransporter();
+
     if (process.env.SMTP_USER && process.env.SMTP_PASS) {
       console.log('✅ Email service initialized');
+
+      // Verify SMTP connection (non-blocking, don't crash server on failure)
+      verifyTransporter()
+        .then((result) => {
+          if (result.success) {
+            console.log('✅ SMTP connection verified - email ready');
+          } else {
+            console.error('❌ SMTP verification failed:', result.error);
+            console.error('⚠️ Email may not send. Common causes:');
+            console.error('   1. Invalid app password');
+            console.error('   2. Gmail blocking the sign-in');
+            console.error('   3. Check your Gmail for a "Blocked" security alert');
+          }
+        })
+        .catch((err) => {
+          console.error('❌ SMTP verify error:', err.message);
+        });
     } else {
       console.warn('⚠️ Email service not configured - contact forms will still be received but emails won\'t be sent');
     }

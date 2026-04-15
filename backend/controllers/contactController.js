@@ -7,34 +7,57 @@ let transporter = null;
 
 const initializeTransporter = () => {
   if (transporter) return transporter;
-  
+
+  // Clean app password (remove spaces if any)
+  const cleanPassword = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s/g, '').trim() : '';
+
   const smtpConfig = {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: false,
+    secure: false, // false for port 587 (TLS), true for port 465 (SSL)
     auth: {
       user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
+      pass: cleanPassword
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   };
-  
+
+  console.log('📧 Initializing email with:', {
+    host: smtpConfig.host,
+    port: smtpConfig.port,
+    user: smtpConfig.auth.user,
+    passLength: smtpConfig.auth.pass ? smtpConfig.auth.pass.length : 0
+  });
+
   if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
     console.warn('⚠️ Email not configured. Set SMTP_USER and SMTP_PASS in .env');
     return null;
   }
-  
+
   transporter = nodemailer.createTransport(smtpConfig);
-  
-  // Verify connection
-  transporter.verify((error, success) => {
-    if (error) {
-      console.error('❌ SMTP Connection Error:', error.message);
-    } else {
-      console.log('✅ SMTP Connection Verified - Email Ready');
-    }
-  });
-  
+
   return transporter;
+};
+
+const verifyTransporter = async () => {
+  if (!transporter) {
+    transporter = initializeTransporter();
+  }
+
+  if (!transporter) {
+    return { success: false, error: 'Transporter not initialized' };
+  }
+
+  try {
+    const result = await transporter.verify();
+    console.log('✅ SMTP Connection Verified');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ SMTP Connection Error:', error.message);
+    return { success: false, error: error.message };
+  }
 };
 
 const submitContact = async (req, res) => {
@@ -80,10 +103,37 @@ const submitContact = async (req, res) => {
     // Initialize transporter if not already done
     const mailTransporter = initializeTransporter();
 
+    // Verify transporter before sending
+    if (!mailTransporter) {
+      console.warn('⚠️ Cannot send email - transporter not initialized');
+      contact.status = 'pending';
+      contacts.push(contact);
+      console.log('📧 New Contact Submission (email pending):', contact);
+
+      return res.status(201).json({
+        success: true,
+        message: 'Message received! Email confirmation will be sent soon.',
+        data: {
+          id: contact.id,
+          name: contact.name,
+          email: contact.email,
+          subject: contact.subject,
+          status: contact.status,
+          createdAt: contact.createdAt
+        }
+      });
+    }
+
+    // Verify connection before sending
+    try {
+      await mailTransporter.verify();
+    } catch (verifyError) {
+      console.error('❌ SMTP Verify failed:', verifyError.message);
+    }
+
     // Send email to site owner
-    if (mailTransporter) {
-      try {
-        await mailTransporter.sendMail({
+    try {
+      await mailTransporter.sendMail({
           from: process.env.SMTP_USER,
           to: process.env.SMTP_USER,
           subject: `📧 New Portfolio Contact: ${subject}`,
