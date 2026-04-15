@@ -25,9 +25,9 @@ const skills = {
     items: ['Git', 'GitHub', 'VS Code', 'Linux', 'Canva']
   },
   marketing: {
-    name: 'Digital',
+    name: 'Marketing',
     icon: '📢',
-    items: ['SEO', 'Google Analytics', 'Meta Ads', 'Content Strategy', 'Social Media Marketing', 'Email Marketing', 'Copywriting', 'Canva']
+    items: ['SEO', 'Google Analytics(Basic)', 'Meta Ads', 'Basic', 'Content Strategy']
   }
 };
 

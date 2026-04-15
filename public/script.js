@@ -857,165 +857,28 @@
   }());
 
   /* ============================================================
-     12. SKILLS LOADER MODULE
+     12. PROJECT CARD TILT EFFECT
      ============================================================ */
-  var SkillsLoader = (function () {
-    var grid = qs('#skills-grid');
-
-    function loadSkills() {
-      if (!grid) {
-        console.error('Skills grid element not found');
-        return;
-      }
-
-      console.log('SkillsLoader: Starting to load skills');
-
-      // Determine API URL based on environment
-      var apiUrl;
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        // Local development - backend on port 5000
-        apiUrl = 'http://localhost:5000/api/skills';
-      } else {
-        // Production (Render) - same host
-        apiUrl = '/api/skills';
-      }
-
-      console.log('SkillsLoader: Using API URL:', apiUrl);
-
-      // Create a timeout promise
-      var timeoutPromise = new Promise(function(resolve, reject) {
-        setTimeout(function() {
-          reject(new Error('API request timeout (5s)'));
-        }, 5000);
-      });
-
-      // Race between fetch and timeout
-      Promise.race([
-        fetch(apiUrl, { 
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }),
-        timeoutPromise
-      ])
-        .then(function (res) {
-          console.log('SkillsLoader: API response status:', res.status);
-          if (!res.ok) {
-            throw new Error('Failed to load skills: ' + res.status);
-          }
-          return res.json();
-        })
-        .then(function (data) {
-          console.log('SkillsLoader: API data received:', data);
-          if (data.success && data.data) {
-            console.log('SkillsLoader: Rendering skills from API');
-            renderSkills(data.data);
-          } else {
-            console.log('SkillsLoader: No data in API response, using fallback');
-            renderFallbackSkills();
-          }
-        })
-        .catch(function (err) {
-          console.warn('SkillsLoader: API request failed:', err.message);
-          console.log('SkillsLoader: Loading fallback skills');
-          renderFallbackSkills();
-        });
-    }
-        .catch(function (err) {
-          console.warn('Skills loading failed:', err.message);
-          renderFallbackSkills();
-        });
-    }
-
-    function renderSkills(skillsData) {
-      console.log('renderSkills: Called with data:', skillsData);
-      grid.innerHTML = '';
-      var delay = 0;
-      var cardCount = 0;
-
-      Object.keys(skillsData).forEach(function (categoryKey) {
-        var category = skillsData[categoryKey];
-        console.log('renderSkills: Processing category:', categoryKey, category);
-        
-        var card = document.createElement('div');
-        card.className = 'dm-card fade-up';
-        card.style.setProperty('--delay', (delay * 0.1) + 's');
-        delay++;
-
-        var skillsList = category.items.map(function (item) {
-          return '<span class="dm-tool">' + escapeHtml(item) + '</span>';
-        }).join('');
-
-        card.innerHTML = 
-          '<div class="dm-card__icon" aria-hidden="true">' + category.icon + '</div>' +
-          '<div class="dm-card__metric">' + category.items.length + '</div>' +
-          '<div class="dm-card__label">' + escapeHtml(category.name) + '</div>' +
-          '<div class="dm-card__tools">' + skillsList + '</div>';
-
-        grid.appendChild(card);
-        cardCount++;
-
-        // Re-apply tilt effect to new cards
-        applyCardTilt(card);
-      });
-      
-      console.log('renderSkills: Rendered ' + cardCount + ' skill cards');
-    }
-
-    function renderFallbackSkills() {
-      console.log('renderFallbackSkills: Using fallback data');
-      // Fallback if API fails
-      var fallback = {
-        frontend: { name: 'Frontend', icon: '🌐', items: ['HTML5', 'CSS3', 'JavaScript', 'Bootstrap', 'Responsive Design'] },
-        backend: { name: 'Backend', icon: '⚙️', items: ['PHP', 'Python', 'Flask', 'MySQL', 'SQLite'] },
-        ai: { name: 'AI / ML', icon: '🤖', items: ['scikit-learn', 'OpenCV', 'NumPy', 'Groq API', 'LLaMA 3'] },
-        iot: { name: 'IoT', icon: '📡', items: ['Arduino', 'IR Sensors', 'LCD Display', 'I2C Module'] },
-        tools: { name: 'Tools', icon: '🛠️', items: ['Git', 'GitHub', 'VS Code', 'Linux', 'Canva'] },
-        marketing: { name: 'Digital', icon: '📢', items: ['SEO', 'Google Analytics', 'Meta Ads', 'Content Strategy', 'Social Media Marketing', 'Email Marketing', 'Copywriting', 'Canva'] }
-      };
-      renderSkills(fallback);
-    }
-
-    function escapeHtml(text) {
-      var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-      return text.replace(/[&<>"']/g, function (m) { return map[m]; });
-    }
-
-    function init() {
-      loadSkills();
-    }
-
-    return { init: init };
-  }());
-
-  /* ============================================================
-     13. PROJECT CARD TILT EFFECT
-     ============================================================ */
-  function applyCardTilt(card) {
-    if (!window.matchMedia('(hover: hover)').matches) return;
-
-    on(card, 'mousemove', function (e) {
-      var rect = card.getBoundingClientRect();
-      var x = e.clientX - rect.left;
-      var y = e.clientY - rect.top;
-      var cx = rect.width / 2;
-      var cy = rect.height / 2;
-      var rx = ((y - cy) / cy) * 4;
-      var ry = ((cx - x) / cx) * 4;
-      card.style.transform = 'perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-8px)';
-    });
-
-    on(card, 'mouseleave', function () {
-      card.style.transform = '';
-    });
-  }
-
   var CardTilt = (function () {
     function init() {
       if (!window.matchMedia('(hover: hover)').matches) return;
       var cards = qsa('.project-card, .dm-card');
 
       cards.forEach(function (card) {
-        applyCardTilt(card);
+        on(card, 'mousemove', function (e) {
+          var rect = card.getBoundingClientRect();
+          var x = e.clientX - rect.left;
+          var y = e.clientY - rect.top;
+          var cx = rect.width / 2;
+          var cy = rect.height / 2;
+          var rx = ((y - cy) / cy) * 4;
+          var ry = ((cx - x) / cx) * 4;
+          card.style.transform = 'perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-8px)';
+        });
+
+        on(card, 'mouseleave', function () {
+          card.style.transform = '';
+        });
       });
     }
 
@@ -1037,7 +900,6 @@
     BackToTop.init();
     ContactForm.init();
     SkillsGlow.init();
-    SkillsLoader.init();
     CardTilt.init();
     setFooterYear();
 
