@@ -22,16 +22,22 @@ const initializeTransporter = () => {
     },
     tls: {
       // Relaxed TLS for cloud hosting environments
-      rejectUnauthorized: false
+      rejectUnauthorized: process.env.NODE_ENV === 'production' ? false : true
     }
   };
 
   if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
     console.warn('⚠️ Email not configured. Set SMTP_USER and SMTP_PASS in .env');
+    console.warn('⚠️ For production deployment, set SMTP_PASS in your hosting provider environment variables');
     return null;
   }
 
   transporter = nodemailer.createTransport(smtpConfig);
+
+  console.log('📧 Email transporter initialized');
+  console.log('   Host:', smtpConfig.host);
+  console.log('   Port:', smtpConfig.port);
+  console.log('   User:', smtpConfig.auth.user);
 
   return transporter;
 };
@@ -107,6 +113,11 @@ const submitContact = async (req, res) => {
           console.log('✅ SMTP connection verified');
         } catch (verifyError) {
           console.error('❌ SMTP verify failed:', verifyError.message);
+          console.error('   Error code:', verifyError.code);
+          console.error('   This often means:');
+          console.error('   - Wrong app password');
+          console.error('   - Gmail blocked the sign-in (check email for security alert)');
+          console.error('   - SMTP_PASS not set in production environment');
           contact.status = 'failed';
           contacts.push(contact);
           return res.status(503).json({
