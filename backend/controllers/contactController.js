@@ -20,9 +20,11 @@ const initializeTransporter = () => {
       pass: cleanPassword
     },
     tls: {
-        // In production: verify certificates (rejectUnauthorized: true)
-        // In development with self-signed certs: set ALLOW_SELF_SIGNED_TLS=true
-        rejectUnauthorized: process.env.ALLOW_SELF_SIGNED_TLS !== 'true'
+      // In production: verify certificates (rejectUnauthorized: true)
+      // In development with self-signed certs: set ALLOW_SELF_SIGNED_TLS=true
+      rejectUnauthorized: process.env.ALLOW_SELF_SIGNED_TLS !== 'true'
+    }
+  };
 
   if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
     console.warn('⚠️ Email not configured. Set SMTP_USER and SMTP_PASS in .env');
