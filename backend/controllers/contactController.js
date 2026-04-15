@@ -24,6 +24,16 @@ const initializeTransporter = () => {
   }
   
   transporter = nodemailer.createTransport(smtpConfig);
+  
+  // Verify connection
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error('❌ SMTP Connection Error:', error.message);
+    } else {
+      console.log('✅ SMTP Connection Verified - Email Ready');
+    }
+  });
+  
   return transporter;
 };
 
@@ -109,9 +119,15 @@ const submitContact = async (req, res) => {
         console.log('✅ Emails sent successfully for contact:', contact.id);
       } catch (emailError) {
         console.error('❌ Email sending failed:', emailError.message);
+        console.error('SMTP Host:', process.env.SMTP_HOST);
+        console.error('SMTP Port:', process.env.SMTP_PORT);
+        console.error('SMTP User:', process.env.SMTP_USER);
         contact.status = 'failed';
         // Still save contact even if email fails
       }
+    } else {
+      console.warn('⚠️ Email transporter not initialized - check SMTP credentials');
+      contact.status = 'pending';
     }
 
     // Store contact
