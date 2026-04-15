@@ -163,16 +163,19 @@
     var CONNECT_DIST = 160;
     var raf;
     var mouseX = -9999, mouseY = -9999;
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     function createNodes() {
       nodes = [];
-      for (var i = 0; i < NODE_COUNT; i++) {
+      // Reduce node count on mobile for performance
+      var count = isMobile ? 30 : NODE_COUNT;
+      for (var i = 0; i < count; i++) {
         nodes.push({
           x: Math.random() * W,
           y: Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          r: Math.random() * 2 + 1
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          r: Math.random() * 1.5 + 0.5
         });
       }
     }
@@ -203,28 +206,30 @@
           var dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < CONNECT_DIST) {
-            var alpha = (1 - dist / CONNECT_DIST) * 0.35;
+            var alpha = (1 - dist / CONNECT_DIST) * 0.25;
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
             ctx.strokeStyle = 'rgba(229, 9, 26, ' + alpha + ')';
-            ctx.lineWidth = 0.6;
+            ctx.lineWidth = isMobile ? 0.4 : 0.6;
             ctx.stroke();
           }
         }
 
-        // Connect to mouse
-        var mdx = mouseX - nodes[i].x;
-        var mdy = mouseY - nodes[i].y;
-        var mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-        if (mdist < CONNECT_DIST * 1.5) {
-          var ma = (1 - mdist / (CONNECT_DIST * 1.5)) * 0.5;
-          ctx.beginPath();
-          ctx.moveTo(nodes[i].x, nodes[i].y);
-          ctx.lineTo(mouseX, mouseY);
-          ctx.strokeStyle = 'rgba(229, 9, 26, ' + ma + ')';
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
+        // Connect to mouse (only on desktop to save performance)
+        if (!isMobile) {
+          var mdx = mouseX - nodes[i].x;
+          var mdy = mouseY - nodes[i].y;
+          var mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+          if (mdist < CONNECT_DIST * 1.5) {
+            var ma = (1 - mdist / (CONNECT_DIST * 1.5)) * 0.4;
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.strokeStyle = 'rgba(229, 9, 26, ' + ma + ')';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
         }
       }
 
@@ -232,7 +237,7 @@
       nodes.forEach(function (n) {
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(229, 9, 26, 0.5)';
+        ctx.fillStyle = 'rgba(229, 9, 26, 0.4)';
         ctx.fill();
       });
 
@@ -279,24 +284,28 @@
     var mouseX = -9999, mouseY = -9999;
     var raf;
     var time = 0;
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     function createParticles() {
       particles = [];
-      for (var i = 0; i < 60; i++) {
+      // Reduce particles on mobile
+      var count = isMobile ? 30 : 60;
+      for (var i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * W,
           y: Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          r: Math.random() * 1.5 + 0.5,
-          alpha: Math.random() * 0.4 + 0.15,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
+          r: Math.random() * 1.2 + 0.3,
+          alpha: Math.random() * 0.3 + 0.1,
           pulse: Math.random() * Math.PI * 2
         });
       }
     }
 
     function shootLine() {
-      if (Math.random() > 0.985) {
+      // Fewer shooting lines on mobile
+      if (Math.random() > (isMobile ? 0.995 : 0.985)) {
         var angle = Math.random() * Math.PI * 2;
         var startX = Math.random() * W;
         var startY = Math.random() * H;
@@ -305,9 +314,9 @@
           y: startY,
           angle: angle,
           length: 0,
-          maxLength: Math.random() * 180 + 80,
-          speed: Math.random() * 6 + 4,
-          alpha: 0.7
+          maxLength: Math.random() * (isMobile ? 100 : 180) + 60,
+          speed: Math.random() * 4 + 3,
+          alpha: 0.6
         });
       }
     }
@@ -319,16 +328,17 @@
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
-      time += 0.008;
+      time += 0.006;
 
-      // Draw gradient ambient orbs
-      for (var i = 0; i < 5; i++) {
-        var orbX = (W * 0.2) + (W * 0.6 * Math.sin(time * 0.3 + i));
-        var orbY = (H * 0.3) + (H * 0.4 * Math.cos(time * 0.2 + i * 0.7));
-        var orbR = 150 + Math.sin(time + i) * 50;
+      // Draw gradient ambient orbs (fewer on mobile)
+      var orbCount = isMobile ? 3 : 5;
+      for (var i = 0; i < orbCount; i++) {
+        var orbX = (W * 0.2) + (W * 0.6 * Math.sin(time * 0.25 + i));
+        var orbY = (H * 0.3) + (H * 0.4 * Math.cos(time * 0.15 + i * 0.7));
+        var orbR = 100 + Math.sin(time * 0.5 + i) * 30;
         var grad = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, orbR);
-        grad.addColorStop(0, 'rgba(229, 9, 26, 0.03)');
-        grad.addColorStop(0.5, 'rgba(229, 9, 26, 0.01)');
+        grad.addColorStop(0, 'rgba(229, 9, 26, 0.02)');
+        grad.addColorStop(0.5, 'rgba(229, 9, 26, 0.008)');
         grad.addColorStop(1, 'rgba(229, 9, 26, 0)');
         ctx.beginPath();
         ctx.arc(orbX, orbY, orbR, 0, Math.PI * 2);
@@ -340,21 +350,21 @@
       particles.forEach(function (p) {
         p.x += p.vx;
         p.y += p.vy;
-        p.pulse += 0.025;
+        p.pulse += 0.02;
         if (p.x < 0 || p.x > W) p.vx *= -1;
         if (p.y < 0 || p.y > H) p.vy *= -1;
-        var pa = p.alpha + Math.sin(p.pulse) * 0.12;
+        var pa = p.alpha + Math.sin(p.pulse) * 0.08;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(245, 166, 35, ' + pa + ')';
         ctx.fill();
       });
 
-      // Update and draw shooting web lines
+      // Update and draw shooting web lines (already filtered based on mobile in shootLine)
       shootLine();
       shootingLines = shootingLines.filter(function (sl) {
         sl.length += sl.speed;
-        sl.alpha -= 0.012;
+        sl.alpha -= 0.01;
         if (sl.alpha <= 0 || sl.length >= sl.maxLength) return false;
         var endX = sl.x + Math.cos(sl.angle) * sl.length;
         var endY = sl.y + Math.sin(sl.angle) * sl.length;
@@ -365,7 +375,7 @@
         ctx.moveTo(sl.x, sl.y);
         ctx.lineTo(endX, endY);
         ctx.strokeStyle = grad;
-        ctx.lineWidth = 1.2;
+        ctx.lineWidth = isMobile ? 0.8 : 1.2;
         ctx.stroke();
         return true;
       });
@@ -861,7 +871,8 @@
      ============================================================ */
   var CardTilt = (function () {
     function init() {
-      if (!window.matchMedia('(hover: hover)').matches) return;
+      // Only enable on desktop with hover capability
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
       var cards = qsa('.project-card, .dm-card');
 
       cards.forEach(function (card) {
@@ -871,9 +882,9 @@
           var y = e.clientY - rect.top;
           var cx = rect.width / 2;
           var cy = rect.height / 2;
-          var rx = ((y - cy) / cy) * 4;
-          var ry = ((cx - x) / cx) * 4;
-          card.style.transform = 'perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-8px)';
+          var rx = ((y - cy) / cy) * 3;
+          var ry = ((cx - x) / cx) * 3;
+          card.style.transform = 'perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-6px)';
         });
 
         on(card, 'mouseleave', function () {
