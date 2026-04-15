@@ -11,18 +11,18 @@ const initializeTransporter = () => {
   // Clean app password (remove spaces if any)
   const cleanPassword = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s/g, '').trim() : '';
 
+  const port = parseInt(process.env.SMTP_PORT) || 587;
   const smtpConfig = {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: false, // false for port 587 (TLS), true for port 465 (SSL)
+    port: port,
+    secure: port === 465, // true for port 465 (SSL), false for 587 (TLS)
     auth: {
       user: process.env.SMTP_USER,
       pass: cleanPassword
     },
     tls: {
-      // In production: verify certificates (rejectUnauthorized: true)
-      // In development with self-signed certs: set ALLOW_SELF_SIGNED_TLS=true
-      rejectUnauthorized: process.env.ALLOW_SELF_SIGNED_TLS !== 'true'
+      // Relaxed TLS for cloud hosting environments
+      rejectUnauthorized: false
     }
   };
 
