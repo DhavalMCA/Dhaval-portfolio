@@ -20,16 +20,9 @@ const initializeTransporter = () => {
       pass: cleanPassword
     },
     tls: {
-      rejectUnauthorized: false
-    }
-  };
-
-  console.log('📧 Initializing email with:', {
-    host: smtpConfig.host,
-    port: smtpConfig.port,
-    user: smtpConfig.auth.user,
-    passLength: smtpConfig.auth.pass ? smtpConfig.auth.pass.length : 0
-  });
+        // In production: verify certificates (rejectUnauthorized: true)
+        // In development with self-signed certs: set ALLOW_SELF_SIGNED_TLS=true
+        rejectUnauthorized: process.env.ALLOW_SELF_SIGNED_TLS !== 'true'
 
   if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
     console.warn('⚠️ Email not configured. Set SMTP_USER and SMTP_PASS in .env');
@@ -106,12 +99,19 @@ const submitContact = async (req, res) => {
     // Send email if transporter is ready
     if (mailTransporter) {
       try {
-        // Verify connection before sending (non-blocking)
+        // Verify connection before sending - MUST succeed
         try {
           await mailTransporter.verify();
+          console.log('✅ SMTP connection verified');
         } catch (verifyError) {
-          console.warn('⚠️ SMTP verify warning:', verifyError.message);
-          // Continue anyway - some servers don't support verify
+          console.error('❌ SMTP verify failed:', verifyError.message);
+          contact.status = 'failed';
+          contacts.push(contact);
+          return res.status(503).json({
+            success: false,
+            message: 'Email service temporarily unavailable. Please try again later.',
+            data: { id: contact.id, status: 'failed' }
+          });
         }
 
         // Send email to site owner

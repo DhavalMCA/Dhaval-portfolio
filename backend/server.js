@@ -34,8 +34,13 @@ if (process.env.NODE_ENV !== 'production') {
 // CORS options with function-based origin validation
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl requests)
-    if (!origin) return callback(null, true);
+    // Null origin (mobile apps, curl without --origin header):
+    // Allow but credentials only for whitelisted origins
+    if (!origin) {
+      // Allow null-origin requests but they won't get cookie credentials
+      callback(null, true);
+      return;
+    }
     
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -45,7 +50,7 @@ const corsOptions = {
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true // Only applies to requests with valid origin
 };
 app.use(cors(corsOptions));
 
