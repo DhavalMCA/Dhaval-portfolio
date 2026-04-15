@@ -863,7 +863,12 @@
     var grid = qs('#skills-grid');
 
     function loadSkills() {
-      if (!grid) return;
+      if (!grid) {
+        console.error('Skills grid element not found');
+        return;
+      }
+
+      console.log('SkillsLoader: Starting to load skills');
 
       // Determine API URL based on environment
       var apiUrl;
@@ -875,24 +880,35 @@
         apiUrl = '/api/skills';
       }
 
+      console.log('SkillsLoader: Using API URL:', apiUrl);
+
       fetch(apiUrl, { 
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       })
         .then(function (res) {
+          console.log('SkillsLoader: API response status:', res.status);
           if (!res.ok) {
-            console.warn('API response not ok:', res.status);
             throw new Error('Failed to load skills: ' + res.status);
           }
           return res.json();
         })
         .then(function (data) {
+          console.log('SkillsLoader: API data received:', data);
           if (data.success && data.data) {
+            console.log('SkillsLoader: Rendering skills from API');
             renderSkills(data.data);
           } else {
+            console.log('SkillsLoader: No data in API response, using fallback');
             renderFallbackSkills();
           }
         })
+        .catch(function (err) {
+          console.warn('SkillsLoader: API request failed:', err.message);
+          console.log('SkillsLoader: Loading fallback skills');
+          renderFallbackSkills();
+        });
+    }
         .catch(function (err) {
           console.warn('Skills loading failed:', err.message);
           renderFallbackSkills();
@@ -900,11 +916,15 @@
     }
 
     function renderSkills(skillsData) {
+      console.log('renderSkills: Called with data:', skillsData);
       grid.innerHTML = '';
       var delay = 0;
+      var cardCount = 0;
 
       Object.keys(skillsData).forEach(function (categoryKey) {
         var category = skillsData[categoryKey];
+        console.log('renderSkills: Processing category:', categoryKey, category);
+        
         var card = document.createElement('div');
         card.className = 'dm-card fade-up';
         card.style.setProperty('--delay', (delay * 0.1) + 's');
@@ -921,13 +941,17 @@
           '<div class="dm-card__tools">' + skillsList + '</div>';
 
         grid.appendChild(card);
+        cardCount++;
 
         // Re-apply tilt effect to new cards
         applyCardTilt(card);
       });
+      
+      console.log('renderSkills: Rendered ' + cardCount + ' skill cards');
     }
 
     function renderFallbackSkills() {
+      console.log('renderFallbackSkills: Using fallback data');
       // Fallback if API fails
       var fallback = {
         frontend: { name: 'Frontend', icon: '🌐', items: ['HTML5', 'CSS3', 'JavaScript', 'Bootstrap', 'Responsive Design'] },
