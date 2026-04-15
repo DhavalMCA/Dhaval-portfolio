@@ -890,12 +890,12 @@
       grid.innerHTML = '';
       var delay = 0;
 
-      // Only render marketing skills
-      if (skillsData.marketing) {
-        var category = skillsData.marketing;
+      Object.keys(skillsData).forEach(function (categoryKey) {
+        var category = skillsData[categoryKey];
         var card = document.createElement('div');
         card.className = 'dm-card fade-up';
         card.style.setProperty('--delay', (delay * 0.1) + 's');
+        delay++;
 
         var skillsList = category.items.map(function (item) {
           return '<span class="dm-tool">' + escapeHtml(item) + '</span>';
@@ -903,18 +903,26 @@
 
         card.innerHTML = 
           '<div class="dm-card__icon" aria-hidden="true">' + category.icon + '</div>' +
-          '<div class="dm-card__label" style="font-size: 1.2em; margin-bottom: 1.5em;">' + escapeHtml(category.name) + ' Skills</div>' +
-          '<div class="dm-card__tools" style="flex-wrap: wrap; gap: 0.8em;">' + skillsList + '</div>';
+          '<div class="dm-card__metric">' + category.items.length + '</div>' +
+          '<div class="dm-card__label">' + escapeHtml(category.name) + '</div>' +
+          '<div class="dm-card__tools">' + skillsList + '</div>';
 
         grid.appendChild(card);
+
+        // Re-apply tilt effect to new cards
         applyCardTilt(card);
-      }
+      });
     }
 
     function renderFallbackSkills() {
       // Fallback if API fails
       var fallback = {
-        marketing: { name: 'Digital', icon: '📢', items: ['SEO', 'Google Analytics', 'Meta Ads', 'Content Strategy', 'Social Media', 'Email Marketing'] }
+        frontend: { name: 'Frontend', icon: '🌐', items: ['HTML5', 'CSS3', 'JavaScript', 'Bootstrap', 'Responsive Design'] },
+        backend: { name: 'Backend', icon: '⚙️', items: ['PHP', 'Python', 'Flask', 'MySQL', 'SQLite'] },
+        ai: { name: 'AI / ML', icon: '🤖', items: ['scikit-learn', 'OpenCV', 'NumPy', 'Groq API', 'LLaMA 3'] },
+        iot: { name: 'IoT', icon: '📡', items: ['Arduino', 'IR Sensors', 'LCD Display', 'I2C Module'] },
+        tools: { name: 'Tools', icon: '🛠️', items: ['Git', 'GitHub', 'VS Code', 'Linux', 'Canva'] },
+        marketing: { name: 'Digital', icon: '📢', items: ['SEO', 'Google Analytics', 'Meta Ads', 'Content Strategy', 'Social Media Marketing', 'Email Marketing', 'Copywriting', 'Canva'] }
       };
       renderSkills(fallback);
     }
