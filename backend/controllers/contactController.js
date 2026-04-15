@@ -103,37 +103,19 @@ const submitContact = async (req, res) => {
     // Initialize transporter if not already done
     const mailTransporter = initializeTransporter();
 
-    // Verify transporter before sending
-    if (!mailTransporter) {
-      console.warn('⚠️ Cannot send email - transporter not initialized');
-      contact.status = 'pending';
-      contacts.push(contact);
-      console.log('📧 New Contact Submission (email pending):', contact);
-
-      return res.status(201).json({
-        success: true,
-        message: 'Message received! Email confirmation will be sent soon.',
-        data: {
-          id: contact.id,
-          name: contact.name,
-          email: contact.email,
-          subject: contact.subject,
-          status: contact.status,
-          createdAt: contact.createdAt
+    // Send email if transporter is ready
+    if (mailTransporter) {
+      try {
+        // Verify connection before sending (non-blocking)
+        try {
+          await mailTransporter.verify();
+        } catch (verifyError) {
+          console.warn('⚠️ SMTP verify warning:', verifyError.message);
+          // Continue anyway - some servers don't support verify
         }
-      });
-    }
 
-    // Verify connection before sending
-    try {
-      await mailTransporter.verify();
-    } catch (verifyError) {
-      console.error('❌ SMTP Verify failed:', verifyError.message);
-    }
-
-    // Send email to site owner
-    try {
-      await mailTransporter.sendMail({
+        // Send email to site owner
+        await mailTransporter.sendMail({
           from: process.env.SMTP_USER,
           to: process.env.SMTP_USER,
           subject: `📧 New Portfolio Contact: ${subject}`,
@@ -149,7 +131,7 @@ const submitContact = async (req, res) => {
             <p><small>Submitted: ${new Date().toLocaleString()}</small></p>
           `
         });
-        
+
         // Send confirmation to visitor
         await mailTransporter.sendMail({
           from: process.env.SMTP_USER,
@@ -164,14 +146,11 @@ const submitContact = async (req, res) => {
             <p>Best regards,<br/>Dhaval Prajapati</p>
           `
         });
-        
+
         contact.status = 'sent';
         console.log('✅ Emails sent successfully for contact:', contact.id);
       } catch (emailError) {
         console.error('❌ Email sending failed:', emailError.message);
-        console.error('SMTP Host:', process.env.SMTP_HOST);
-        console.error('SMTP Port:', process.env.SMTP_PORT);
-        console.error('SMTP User:', process.env.SMTP_USER);
         contact.status = 'failed';
         // Still save contact even if email fails
       }
@@ -186,7 +165,9 @@ const submitContact = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Message received! You will receive a confirmation email shortly.',
+      message: contact.status === 'sent'
+        ? 'Message received! You will receive a confirmation email shortly.'
+        : 'Message received! You will receive a confirmation email soon.',
       data: {
         id: contact.id,
         name: contact.name,
