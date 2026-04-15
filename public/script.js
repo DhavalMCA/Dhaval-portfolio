@@ -865,19 +865,32 @@
     function loadSkills() {
       if (!grid) return;
 
-      // Determine API URL
-      var apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:5000/api/skills'
-        : '/api/skills';
+      // Determine API URL based on environment
+      var apiUrl;
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        // Local development - backend on port 5000
+        apiUrl = 'http://localhost:5000/api/skills';
+      } else {
+        // Production (Render) - same host
+        apiUrl = '/api/skills';
+      }
 
-      fetch(apiUrl)
+      fetch(apiUrl, { 
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      })
         .then(function (res) {
-          if (!res.ok) throw new Error('Failed to load skills');
+          if (!res.ok) {
+            console.warn('API response not ok:', res.status);
+            throw new Error('Failed to load skills: ' + res.status);
+          }
           return res.json();
         })
         .then(function (data) {
           if (data.success && data.data) {
             renderSkills(data.data);
+          } else {
+            renderFallbackSkills();
           }
         })
         .catch(function (err) {
