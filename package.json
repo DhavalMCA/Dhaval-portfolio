@@ -1,0 +1,15 @@
+{
+  "name": "dhaval-portfolio",
+  "version": "1.0.0",
+  "description": "Dhaval Prajapati - Full Stack Developer Portfolio",
+  "private": true,
+  "scripts": {
+    "start": "npx kill-port 3000 && cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "install": "cd backend && npm install",
+    "build": "cd backend && npm install"
+  },
+  "keywords": ["portfolio", "full-stack", "developer"],
+  "author": "Dhaval Prajapati",
+  "license": "MIT"
+}
