@@ -857,28 +857,109 @@
   }());
 
   /* ============================================================
-     12. PROJECT CARD TILT EFFECT
+     12. SKILLS LOADER MODULE
      ============================================================ */
+  var SkillsLoader = (function () {
+    var grid = qs('#skills-grid');
+
+    function loadSkills() {
+      if (!grid) return;
+
+      // Determine API URL
+      var apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:5000/api/skills'
+        : '/api/skills';
+
+      fetch(apiUrl)
+        .then(function (res) {
+          if (!res.ok) throw new Error('Failed to load skills');
+          return res.json();
+        })
+        .then(function (data) {
+          if (data.success && data.data) {
+            renderSkills(data.data);
+          }
+        })
+        .catch(function (err) {
+          console.warn('Skills loading failed:', err.message);
+          renderFallbackSkills();
+        });
+    }
+
+    function renderSkills(skillsData) {
+      grid.innerHTML = '';
+      var delay = 0;
+
+      // Only render marketing skills
+      if (skillsData.marketing) {
+        var category = skillsData.marketing;
+        var card = document.createElement('div');
+        card.className = 'dm-card fade-up';
+        card.style.setProperty('--delay', (delay * 0.1) + 's');
+
+        var skillsList = category.items.map(function (item) {
+          return '<span class="dm-tool">' + escapeHtml(item) + '</span>';
+        }).join('');
+
+        card.innerHTML = 
+          '<div class="dm-card__icon" aria-hidden="true">' + category.icon + '</div>' +
+          '<div class="dm-card__label" style="font-size: 1.2em; margin-bottom: 1.5em;">' + escapeHtml(category.name) + ' Skills</div>' +
+          '<div class="dm-card__tools" style="flex-wrap: wrap; gap: 0.8em;">' + skillsList + '</div>';
+
+        grid.appendChild(card);
+        applyCardTilt(card);
+      }
+    }
+
+    function renderFallbackSkills() {
+      // Fallback if API fails
+      var fallback = {
+        marketing: { name: 'Digital', icon: '📢', items: ['SEO', 'Google Analytics', 'Meta Ads', 'Content Strategy', 'Social Media', 'Email Marketing'] }
+      };
+      renderSkills(fallback);
+    }
+
+    function escapeHtml(text) {
+      var map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, function (m) { return map[m]; });
+    }
+
+    function init() {
+      loadSkills();
+    }
+
+    return { init: init };
+  }());
+
+  /* ============================================================
+     13. PROJECT CARD TILT EFFECT
+     ============================================================ */
+  function applyCardTilt(card) {
+    if (!window.matchMedia('(hover: hover)').matches) return;
+
+    on(card, 'mousemove', function (e) {
+      var rect = card.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var cx = rect.width / 2;
+      var cy = rect.height / 2;
+      var rx = ((y - cy) / cy) * 4;
+      var ry = ((cx - x) / cx) * 4;
+      card.style.transform = 'perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-8px)';
+    });
+
+    on(card, 'mouseleave', function () {
+      card.style.transform = '';
+    });
+  }
+
   var CardTilt = (function () {
     function init() {
       if (!window.matchMedia('(hover: hover)').matches) return;
       var cards = qsa('.project-card, .dm-card');
 
       cards.forEach(function (card) {
-        on(card, 'mousemove', function (e) {
-          var rect = card.getBoundingClientRect();
-          var x = e.clientX - rect.left;
-          var y = e.clientY - rect.top;
-          var cx = rect.width / 2;
-          var cy = rect.height / 2;
-          var rx = ((y - cy) / cy) * 4;
-          var ry = ((cx - x) / cx) * 4;
-          card.style.transform = 'perspective(800px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-8px)';
-        });
-
-        on(card, 'mouseleave', function () {
-          card.style.transform = '';
-        });
+        applyCardTilt(card);
       });
     }
 
@@ -900,6 +981,7 @@
     BackToTop.init();
     ContactForm.init();
     SkillsGlow.init();
+    SkillsLoader.init();
     CardTilt.init();
     setFooterYear();
 

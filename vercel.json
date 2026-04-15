@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "buildCommand": "cd backend && npm install",
+  "installCommand": "cd backend && npm install",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "backend/server.js": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/backend/server.js" },
+    { "source": "/(.*)", "destination": "/backend/server.js" }
+  ]
+}
