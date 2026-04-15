@@ -882,10 +882,21 @@
 
       console.log('SkillsLoader: Using API URL:', apiUrl);
 
-      fetch(apiUrl, { 
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      })
+      // Create a timeout promise
+      var timeoutPromise = new Promise(function(resolve, reject) {
+        setTimeout(function() {
+          reject(new Error('API request timeout (5s)'));
+        }, 5000);
+      });
+
+      // Race between fetch and timeout
+      Promise.race([
+        fetch(apiUrl, { 
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        }),
+        timeoutPromise
+      ])
         .then(function (res) {
           console.log('SkillsLoader: API response status:', res.status);
           if (!res.ok) {
