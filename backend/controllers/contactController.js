@@ -196,4 +196,4 @@ const getContacts = (req, res) => {
   });
 };
 
-module.exports = { submitContact, getContacts, initializeTransporter };
+module.exports = { submitContact, getContacts, initializeTransporter, verifyTransporter };
