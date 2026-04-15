@@ -23,7 +23,11 @@ app.use(helmet({
 // CORS
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production'
-    ? ['https://dhavalmca.github.io', 'http://localhost:3000']
+    ? [
+        'https://dhavalmca.github.io',
+        'https://dhaval-portfolio-019o.onrender.com',
+        'http://localhost:3000'
+      ]
     : '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
