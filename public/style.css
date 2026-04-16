@@ -781,10 +781,7 @@ input, textarea { font-family: inherit; }
 
 /* Scroll Indicator */
 .hero__scroll {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -794,6 +791,8 @@ input, textarea { font-family: inherit; }
   color: var(--text-muted);
   transition: color var(--t-fast);
   z-index: 2;
+  margin-top: auto;
+  padding-bottom: 1.5rem;
 }
 
 .hero__scroll:hover { color: var(--red); }
@@ -2539,7 +2538,7 @@ a.contact__link-item:hover .contact__link-arrow {
   .hero__stat-divider { display: none; }
 
   .hero__scroll {
-    bottom: 1rem;
+    padding-bottom: 0.5rem;
   }
 
   .about__hero {
