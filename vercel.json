@@ -1,15 +1,16 @@
 {
   "version": 2,
-  "buildCommand": "cd backend && npm install",
   "installCommand": "cd backend && npm install",
+  "buildCommand": "echo 'No build step needed - serving static frontend'",
   "framework": null,
+  "outputDirectory": "public",
   "env": {
     "NODE_ENV": "production"
   },
   "functions": {
     "backend/server.js": {
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 30
     }
   },
   "rewrites": [
