@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const { inject } = require('@vercel/analytics');
 require('dotenv').config();
 
 const projectsRouter = require('./routes/projects');
@@ -11,6 +12,9 @@ const skillsRouter = require('./routes/skills');
 const contactRouter = require('./routes/contact');
 const resumeRouter = require('./routes/resume');
 const { initializeTransporter, verifyTransporter } = require('./controllers/contactController');
+
+// Vercel Analytics
+inject();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
