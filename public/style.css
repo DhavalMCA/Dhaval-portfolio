@@ -67,6 +67,7 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -580,9 +581,9 @@ input, textarea { font-family: inherit; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   text-align: center;
-  padding: clamp(5rem, 10vw, 8rem) clamp(1rem, 5vw, 2rem) clamp(3rem, 6vw, 5rem);
+  padding: clamp(5rem, 10vw, 8rem) clamp(1rem, 5vw, 2rem) clamp(2rem, 5vw, 3rem);
   overflow: hidden;
   z-index: 1;
 }
@@ -622,6 +623,9 @@ input, textarea { font-family: inherit; }
   z-index: 2;
   max-width: 800px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Badge */
@@ -749,6 +753,7 @@ input, textarea { font-family: inherit; }
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .hero__stat {
@@ -791,8 +796,8 @@ input, textarea { font-family: inherit; }
   color: var(--text-muted);
   transition: color var(--t-fast);
   z-index: 2;
-  margin-top: auto;
-  padding-bottom: 1.5rem;
+  padding: 1rem 0;
+  align-self: center;
 }
 
 .hero__scroll:hover { color: var(--red); }
@@ -805,8 +810,8 @@ input, textarea { font-family: inherit; }
 }
 
 .hero__scroll-icon {
-  width: 28px;
-  height: 28px;
+  width: clamp(24px, 5vw, 28px);
+  height: clamp(24px, 5vw, 28px);
   animation: bounceDown 1.8s ease-in-out infinite;
 }
 
@@ -2422,6 +2427,14 @@ a.contact__link-item:hover .contact__link-arrow {
 
   .hero__stat-divider { height: 30px; }
 
+  .hero__scroll {
+    padding: 0.75rem 0;
+  }
+
+  .hero__scroll-text {
+    font-size: 0.62rem;
+  }
+
   .about__card--bio { grid-column: 1; }
 
   /* About section mobile fixes */
@@ -2538,7 +2551,17 @@ a.contact__link-item:hover .contact__link-arrow {
   .hero__stat-divider { display: none; }
 
   .hero__scroll {
-    padding-bottom: 0.5rem;
+    padding: 0.75rem 0;
+    align-self: center;
+  }
+
+  .hero__scroll-text {
+    font-size: 0.6rem;
+  }
+
+  .hero__scroll-icon {
+    width: 20px;
+    height: 20px;
   }
 
   .about__hero {
@@ -2664,6 +2687,37 @@ a.contact__link-item:hover .contact__link-arrow {
     right: 0.75rem;
     width: 42px;
     height: 42px;
+  }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 480px) {
+  .hero {
+    padding: clamp(4rem, 8vw, 5rem) 1rem clamp(1.5rem, 4vw, 2rem);
+    justify-content: flex-start;
+  }
+
+  .hero__content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hero__scroll {
+    margin-top: auto;
+    padding: 1rem 0;
+    align-self: center;
+  }
+
+  .hero__scroll-text {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+  }
+
+  .hero__scroll-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 
