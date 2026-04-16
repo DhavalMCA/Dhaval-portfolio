@@ -533,8 +533,7 @@
   var HeroTyper = (function () {
     var roles = [
       'Full Stack Developer',
-      'AI/ML Builder',
-      'IoT Engineer',
+      'AI Based Web Developer',
       'MCA Graduate',
       'Problem Solver',
       'Digital Marketer'
@@ -917,7 +916,7 @@
     // Console Easter Egg
     var styles = [
       ['%c🕷️ Hey there, Spidey sense tingling?', 'color:#e5091a;font-size:22px;font-weight:bold;'],
-      ['%cBuilt by Dhaval Prajapati — MCA Graduate · Full Stack Dev · AI/ML', 'color:#7eb3ff;font-size:12px;'],
+      ['%cBuilt by Dhaval Prajapati — MCA Graduate · Full Stack Dev · AI Based Web Developer', 'color:#7eb3ff;font-size:12px;'],
       ['%c📧 dhavalprajapati4518@gmail.com', 'color:#f5a623;font-size:12px;'],
       ['%c🐙 github.com/DhavalMCA', 'color:#00e676;font-size:12px;']
     ];
