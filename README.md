@@ -1,6 +1,6 @@
 # Dhaval Portfolio
 
-> AI Web Developer Portfolio — Built with Express.js, featuring AI/ML-powered projects, Computer Vision applications, IoT builds, and Full Stack Development.
+> AI Based Web Developer Portfolio — Built with Express.js, featuring AI-powered projects, Computer Vision applications, and Full Stack Development.
 
 ![Portfolio Status](https://img.shields.io/badge/status-ready%20to%20deploy-brightgreen)
 ![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-green)
@@ -8,19 +8,18 @@
 
 ## About
 
-Portfolio of **Dhaval Prajapati** — AI Web Developer & ML Engineer from Gujarat, India.
+Portfolio of **Dhaval Prajapati** — AI Based Web Developer from Gujarat, India.
 
 - 🔗 **Live Demo**: [https://dhavalmca.github.io](https://dhavalmca.github.io)
 - 📧 **Email**: dhavalprajapati4518@gmail.com
 - 💻 **GitHub**: [github.com/DhavalMCA](https://github.com/DhavalMCA)
-- 💼 **LinkedIn**: [linkedin.com/in/dhaval-prajapati](https://linkedin.com/in/dhaval-prajapati)
+- 💼 **LinkedIn**: [linkedin.com/in/dhaval-prajapati-900b8818b](https://linkedin.com/in/dhaval-prajapati-900b8818b)
 
 ## Features
 
 - 🤖 **AI-Powered Projects** — LLM integration via Groq API, ML models with scikit-learn
 - 👁️ **Computer Vision** — OpenCV-based attendance & image processing systems
 - 🌐 **Full Stack Web Apps** — Express.js backend with RESTful API design
-- 📡 **IoT Projects** — Arduino-based hardware builds with sensor integration
 - 🕷️ **Spider-Man Themed UI** — Animated web background, particle effects, custom cursor
 - 📱 **Fully Responsive** — Mobile-first design with glass morphism aesthetics
 - 📬 **Contact Form** — Email notification system with Nodemailer
@@ -166,7 +165,7 @@ Full-stack deployment recommended with:
 | 2 | AI Workout & Diet Planner | Python, Flask, scikit-learn, Groq | AI/ML |
 | 3 | Face Recognition Attendance | Python, Flask, OpenCV, SQLite | Computer Vision |
 | 4 | Movie Ticket Booking | PHP, MySQL, HTML, CSS | Full Stack |
-| 5 | Car Speed Detector | Arduino, IR Sensors, I2C LCD | IoT |
+| 5 | Car Speed Detector | Arduino, IR Sensors, I2C LCD | Hardware |
 | 6 | Guess the Word | HTML, CSS, JavaScript | Game |
 | 7 | AI Nutrition Planner | JavaScript, AI API, HTML/CSS | AI/ML |
 | 8 | NexLoad | HTML, CSS, JS, Backend | Full Stack |
@@ -175,8 +174,7 @@ Full-stack deployment recommended with:
 
 - 🌐 **Frontend** — HTML5, CSS3, JavaScript, Bootstrap, Responsive Design
 - ⚙️ **Backend** — PHP, Python, Flask, MySQL, SQLite
-- 🤖 **AI / ML** — scikit-learn, OpenCV, NumPy, Groq API, LLaMA 3
-- 📡 **IoT** — Arduino, IR Sensors, LCD Display, I2C Module
+- 🤖 **AI** — OpenCV, NumPy, Groq API, LLaMA 3
 - 🛠️ **Tools** — Git, GitHub, VS Code, Linux, Canva
 - 📢 **Marketing** — SEO, Google Analytics, Meta Ads, Content Strategy
 
@@ -190,7 +188,7 @@ Full-stack deployment recommended with:
 Feel free to reach out:
 - 📧 Email: dhavalprajapati4518@gmail.com
 - 💻 GitHub: [github.com/DhavalMCA](https://github.com/DhavalMCA)
-- 💼 LinkedIn: [linkedin.com/in/dhaval-prajapati](https://linkedin.com/in/dhaval-prajapati)
+- 💼 LinkedIn: [linkedin.com/in/dhaval-prajapati-900b8818b](https://linkedin.com/in/dhaval-prajapati-900b8818b)
 
 ---
 
